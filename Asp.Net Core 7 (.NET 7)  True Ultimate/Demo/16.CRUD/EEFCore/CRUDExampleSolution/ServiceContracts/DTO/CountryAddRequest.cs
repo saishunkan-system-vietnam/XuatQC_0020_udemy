@@ -11,7 +11,7 @@ namespace ServiceContracts.DTO
 
         public Country ToCountry()
         {
-            return new Country { Name = CountryName };
+            return new Country { CountryName = CountryName };
 
         }
 

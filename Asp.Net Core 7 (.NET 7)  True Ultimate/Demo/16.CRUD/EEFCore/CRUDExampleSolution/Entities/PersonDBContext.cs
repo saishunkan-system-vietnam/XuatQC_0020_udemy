@@ -39,5 +39,6 @@ namespace Entities
                 modelBuilder.Entity<Person>().HasData(perrson);
             }
         }
+
     }
 }

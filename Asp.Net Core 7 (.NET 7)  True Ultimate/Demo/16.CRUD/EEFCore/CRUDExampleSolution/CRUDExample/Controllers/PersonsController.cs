@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualBasic;
+using Rotativa.AspNetCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
@@ -12,16 +13,11 @@ namespace CRUDExample.Controllers
     {
         private readonly IPersonService _personService;
         private readonly ICountriesService _countriesService;
-        private readonly IFinnhubService _finnhubService;
-        private readonly IStocksService _stocksService;
 
-        public PersonsController(IPersonService personService, ICountriesService countriesService,
-            IFinnhubService finnhubService, IStocksService stocksService)
+        public PersonsController(IPersonService personService, ICountriesService countriesService)
         {
             _personService = personService;
             _countriesService = countriesService;
-            _finnhubService = finnhubService;
-            _stocksService = stocksService;
         }
 
         [Route("index")]
@@ -29,18 +25,6 @@ namespace CRUDExample.Controllers
         public async Task<IActionResult> Index(string searchBy, string? searchValue,
             string sortBy = nameof(PersonResponse.PersonName), SortedOrderOptions sortOrder = SortedOrderOptions.ASC)
         {
-            var respone = await _finnhubService.GetCompanyProfile("MSFT");
-            var rest = await _finnhubService.GetStockPriceQuote("MSFT");
-
-            BuyOrderRequest buyOrderRquest = new BuyOrderRequest();
-            buyOrderRquest.StockName = "Microsoft";
-            buyOrderRquest.StockSymbol = "";
-            buyOrderRquest.Price = 0;
-            buyOrderRquest.Quantity = 0;
-            buyOrderRquest.DateAndTimeOfOrder = Convert.ToDateTime("2023-11-25");
-
-            var stockRes = await _stocksService.CreateBuyOrder(buyOrderRquest);
-
             ViewBag.SearchFields = new Dictionary<string, string>()
             {
                 {nameof(PersonResponse.PersonName), "Person Name" },
@@ -135,7 +119,7 @@ namespace CRUDExample.Controllers
 
         [HttpGet]
         [Route("[action]/{personID}")]
-        public IActionResult Delete (Guid personID)
+        public IActionResult Delete(Guid personID)
         {
             PersonResponse? personResponse = _personService.GetPersonById(personID);
 
@@ -146,12 +130,32 @@ namespace CRUDExample.Controllers
 
             if (ModelState.IsValid)
             {
-                 _personService.DetletePerson(personID);
+                _personService.DetletePerson(personID);
                 return RedirectToAction("Index", "Persons");
             }
 
             return View();
         }
+
+        [Route("person-pdf")]
+        public IActionResult PersonPDF()
+        {
+            List<PersonResponse> persons = _personService.GetAllPersons();
+
+
+            return new ViewAsPdf("PersonPDF", persons, ViewData)
+            {
+                PageMargins = new Rotativa.AspNetCore.Options.Margins()
+                {
+                    Top = 20,
+                    Bottom = 20,
+                    Left = 20,
+                    Right = 20
+                },
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
+            };
+        }
+
         private List<CountryResponse> GetAllCountries()
         {
             List<CountryResponse> countries = _countriesService.GetAllCountries();

@@ -13,11 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceContracts", "Service
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{3410BEA7-E6D5-4564-B2DD-FD3AEDC487E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestFinnhub", "TestFinnhub\TestFinnhub.csproj", "{3EC2A3ED-DD9B-49E3-8F1F-EC9D6268FFEB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration", "Configuration\Configuration.csproj", "{601A5BBC-D698-4B60-BAA7-22FB106A3FC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xUnitFinhub", "xUnitFinhub\xUnitFinhub.csproj", "{41698E42-77BB-4B40-841E-ED4675E71B64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xUnitFinhub", "xUnitFinhub\xUnitFinhub.csproj", "{41698E42-77BB-4B40-841E-ED4675E71B64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +43,6 @@ Global
 		{3410BEA7-E6D5-4564-B2DD-FD3AEDC487E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3410BEA7-E6D5-4564-B2DD-FD3AEDC487E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3410BEA7-E6D5-4564-B2DD-FD3AEDC487E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3EC2A3ED-DD9B-49E3-8F1F-EC9D6268FFEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3EC2A3ED-DD9B-49E3-8F1F-EC9D6268FFEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3EC2A3ED-DD9B-49E3-8F1F-EC9D6268FFEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3EC2A3ED-DD9B-49E3-8F1F-EC9D6268FFEB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{601A5BBC-D698-4B60-BAA7-22FB106A3FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{601A5BBC-D698-4B60-BAA7-22FB106A3FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{601A5BBC-D698-4B60-BAA7-22FB106A3FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
