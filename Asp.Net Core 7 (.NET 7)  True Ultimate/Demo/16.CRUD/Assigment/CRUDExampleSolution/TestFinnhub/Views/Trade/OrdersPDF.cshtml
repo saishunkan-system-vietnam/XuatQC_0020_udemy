@@ -1,0 +1,33 @@
+﻿@model IEnumerable<TradeOrderResponse>
+
+
+<link href="@("http://" + Context.Request.Host.ToString() + "/css/" + "Stylesheet.css")" rel="stylesheet"/>
+
+<h1>Orders</h1>
+
+<table class="table w-100 mt">
+    <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Stock</th>
+            <th>Order Type</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Trade amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (TradeOrderResponse tradeOrder in Model)
+        {
+            <tr>
+                <td style="width:15%">@tradeOrder.DateAndTimeOfOrder</td>
+                <td style="width:20%">@string.Concat(@tradeOrder.StockName,"(", @tradeOrder.StockSymbol, ")")</td>
+                <td style="width:13%">@tradeOrder.OrderType</td>
+                <td style="width:9%">@tradeOrder.Quantity</td>
+                <td style="width:9%">@tradeOrder.Price.ToString("N")</td>
+                <td style="width:10%">@tradeOrder.TradeAmount.ToString("N")</td>
+            </tr>
+        }
+        <tr></tr>
+    </tbody>
+</table>
