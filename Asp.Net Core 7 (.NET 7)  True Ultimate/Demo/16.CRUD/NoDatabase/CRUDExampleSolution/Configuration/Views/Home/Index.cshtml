@@ -1,0 +1,61 @@
+﻿@model IEnumerable<SocialMediaLinksOptions>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Social media links</title>
+    <link href="~/StyleSheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="page-content">
+            <div class="margin-bottom">
+                <h1>Social media links</h1>
+            </div>
+            
+            <div class="margin-top-200 margin-left">
+                <div class="flex">
+                    <div class="box w-30">
+                        <div class="flex-borderless">
+                            <div class="w-50">
+                                <a href="@ViewBag.FaceBook" class="margin-top">
+                                    <h2>FaceBook</h2>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box w-30">
+                        <div class="flex-borderless">
+                            <div class="w-50">
+                                <a href="@ViewBag.Youtube" class="margin-top">
+                                    <h2>Youtube</h2>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <environment exclude="Development">
+                    <div class="box w-30">
+                        <div class="flex-borderless">
+                            <div class="w-50">
+                                <a href="@ViewBag.Instagram" class="margin-top">
+                                    <h2>Instagram</h2>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    </environment>
+                    <div class="box w-30">
+                        <div class="flex-borderless">
+                            <div class="w-50">
+                                <a href="@ViewBag.Twitter" class="margin-top">
+                                    <h2>Twitter</h2>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
