@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xUnitFinhub", "xUnitFinhub\xUnitFinhub.csproj", "{41698E42-77BB-4B40-841E-ED4675E71B64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinnhubApp", "TestFinnhub\FinnhubApp.csproj", "{7AE2FD74-5913-4F23-A509-03F8A6848B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinnhubApp", "FinnhubApp\FinnhubApp.csproj", "{7AE2FD74-5913-4F23-A509-03F8A6848B5D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{297FC15A-857A-4F70-AF32-9A4B3A90A653}"
 EndProject
