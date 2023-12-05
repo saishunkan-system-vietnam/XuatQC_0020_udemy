@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TestFinnhub</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TestFinnhub.styles.css" asp-append-version="true"/>
+    <link href="~/css/StyleSheet.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="navbar mb">
+        <ul>
+            @if (ViewBag.CurrentUrl == "~/Explore")
+            {
+                <li><a asp-controller="Stocks" asp-action="Explore" class="nav-active">Explore</a></li>
+            }
+            else
+            {
+                <li><a asp-controller="Stocks" asp-action="Explore">Explore</a></li>
+            }
+
+            @if (ViewBag.CurrentUrl == "~/Trade/Index")
+            {
+                <li><a href="#" class="nav-active">Trade</a></li>
+            }
+            else
+            {
+                <li><a href="#">Trade</a></li>
+            }
+
+            @if (ViewBag.CurrentUrl == "~/Trade/Orders")
+            {
+                <li><a asp-controller="Trade" asp-action="Orders" class="nav-active">Orders</a></li>
+            }
+            else
+            {
+                <li><a asp-controller="Trade" asp-action="Orders">Orders</a></li>
+            }
+        </ul>
+    </div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
