@@ -7,7 +7,8 @@ namespace CRUDExample.Controllers
     public class BankController : Controller
     {
         private readonly dynamic _bank_accouts;
-        public BankController()
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public BankController(IHttpContextAccessor httpContextAccessor)
         {
             _bank_accouts = new
             {
@@ -15,6 +16,8 @@ namespace CRUDExample.Controllers
                 accountHolderName = "Example Name",
                 currentBalance = 5000
             };
+
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // Example #1:
@@ -57,6 +60,9 @@ namespace CRUDExample.Controllers
         [Route("get-current-balance")]
         public IActionResult GetBalance(int? accountNumber)
         {
+            var localIp = _httpContextAccessor.HttpContext.Connection.LocalIpAddress;
+            var remoteIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+
             if (accountNumber == 0 || accountNumber == null)
             {
                 return NotFound("Account Number should be supplied.");

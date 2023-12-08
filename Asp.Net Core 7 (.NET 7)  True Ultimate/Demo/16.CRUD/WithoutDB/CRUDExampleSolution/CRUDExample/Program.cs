@@ -9,6 +9,8 @@ builder.Services.AddSingleton<IPersonService, PersonService>();
 builder.Services.AddSingleton<IFinnhubService, FinnhubService>();
 builder.Services.AddSingleton<IStocksService, StocksService>();
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddOptions<TradingOptions>()
             .Bind(builder.Configuration.GetSection(nameof(TradingOptions)))
             .ValidateDataAnnotations();
