@@ -1,9 +1,15 @@
 using Entities;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Repositories;
 using RepositoryContracts;
+using Serilog;
 using ServiceContracts;
 using Services;
+using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,16 +27,31 @@ builder.Services.AddTransient<IOrderItemsRepository, OrderItemsRepository>();
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptionsAction: sqlOption =>
+    {
+        sqlOption.EnableRetryOnFailure();
+    });
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    
 });
+
+
+builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider sevices,
+    LoggerConfiguration loggerConfiguration) =>
+{
+    loggerConfiguration
+    .ReadFrom.Configuration(context.Configuration) // read configuration settings form built-in Iconfiguration
+    .ReadFrom.Services(sevices); // read out current app's services and make them avilable to serilog
+});
+
 
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/error-development");
+    // app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -40,6 +61,11 @@ else
 
 
 //app.UseHttpsRedirection();
+
+app.UseHttpLogging();
+
+app.UseStaticFiles();
+
 
 app.UseRouting();
 

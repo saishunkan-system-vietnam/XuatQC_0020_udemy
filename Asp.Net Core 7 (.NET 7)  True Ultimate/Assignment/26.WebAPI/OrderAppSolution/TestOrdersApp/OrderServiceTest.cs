@@ -3,6 +3,8 @@ using Entities;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Repositories;
 using RepositoryContracts;
 using ServiceContracts;
@@ -15,6 +17,7 @@ namespace TestOrdersApp
     {
         private readonly IOrdersService _ordersService;
         private readonly IFixture _autoFixture;
+        private readonly ILogger<OrdersService> _logger;
 
         public OrderServiceTest()
         {
@@ -26,13 +29,13 @@ namespace TestOrdersApp
                     new DbContextOptionsBuilder<ApplicationDbContext>().Options
                 );
 
-            // 
             ApplicationDbContext dbContext = dbContextMock.Object;
             dbContextMock.CreateDbSetMock(temp => temp.Orders, orderInitialData);
 
             IOrdersRepository ordersRepository = new OrdersRepository(dbContext);
 
-            _ordersService = new OrdersService(ordersRepository);
+            _logger = Mock.Of<ILogger<OrdersService>>();
+            _ordersService = new OrdersService(ordersRepository, _logger);
             _autoFixture = new Fixture();
         }
 

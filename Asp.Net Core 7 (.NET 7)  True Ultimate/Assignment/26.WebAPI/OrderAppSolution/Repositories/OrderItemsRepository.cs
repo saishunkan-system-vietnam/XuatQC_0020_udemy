@@ -13,6 +13,7 @@ namespace Repositories
         }
         public async Task<OrderItem> AddOrderItem(OrderItem orderItem)
         {
+            orderItem.OrderItemId = Guid.NewGuid();
             _context.OrderItems.Add(orderItem);
             await _context.SaveChangesAsync();
             return orderItem;

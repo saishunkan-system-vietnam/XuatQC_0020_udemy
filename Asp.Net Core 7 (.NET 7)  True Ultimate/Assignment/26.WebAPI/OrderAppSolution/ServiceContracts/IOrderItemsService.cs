@@ -51,6 +51,6 @@ namespace ServiceContracts
         /// </summary>
         /// <param name="orderItemRequest">The updated order item data from client request</param>
         /// <returns>The updated order item</returns>
-        Task<OrderItemResponse> UpdateOrderItem(OrderItemUpdateRequest orderItemRequest);
+        Task<OrderItemResponse?> UpdateOrderItem(OrderItemUpdateRequest orderItemRequest);
     }
 }

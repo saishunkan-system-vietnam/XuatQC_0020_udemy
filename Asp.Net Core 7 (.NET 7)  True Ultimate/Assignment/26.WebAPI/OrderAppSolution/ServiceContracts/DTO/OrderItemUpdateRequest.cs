@@ -42,7 +42,7 @@ namespace ServiceContracts.DTO
         /// <summary>
         /// Unit price of the product in the order item
         /// </summary>
-        [Range(0, double.MaxValue, ErrorMessage = "The UnitPrice must be a positive number")]
+        [Range(0, 100000000, ErrorMessage = "The UnitPrice must be a positive number")]
         [Column(TypeName = "decimal")]
         public decimal UnitPrice { get; set; }
 
@@ -50,7 +50,7 @@ namespace ServiceContracts.DTO
         /// <summary>
         /// Total price of the order item
         /// </summary>
-        [Range(0, double.MaxValue, ErrorMessage = "The total price of the order item must be a positive number")]
+        [Range(0, 100000000, ErrorMessage = "The total price of the order item must be a positive number")]
         [Column(TypeName = "decimal")]
         public decimal TotalPrice { get; set; }
 

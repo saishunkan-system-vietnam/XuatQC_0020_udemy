@@ -1,8 +1,11 @@
 using AutoFixture;
+using Castle.Core.Logging;
 using Entities;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Repositories;
 using RepositoryContracts;
 using ServiceContracts;
@@ -15,6 +18,7 @@ namespace TestOrdersApp
     {
         private readonly IOrderItemsService _orderItemsService;
         private readonly IFixture _autoFixture;
+        private readonly ILogger<OrderItemsService> _logger;
 
         public OrderItemServiceTest()
         {
@@ -26,13 +30,13 @@ namespace TestOrdersApp
                     new DbContextOptionsBuilder<ApplicationDbContext>().Options
                 );
 
-            // 
             ApplicationDbContext dbContext = dbContextMock.Object;
             dbContextMock.CreateDbSetMock(temp => temp.OrderItems, orderItemsInitialData);
 
             IOrderItemsRepository orderItemsRepository = new OrderItemsRepository(dbContext);
+            _logger = Mock.Of<ILogger<OrderItemsService>>();
 
-            _orderItemsService = new OrderItemsService(orderItemsRepository);
+            _orderItemsService = new OrderItemsService(orderItemsRepository, _logger);
             _autoFixture = new Fixture();
         }
 
@@ -58,14 +62,15 @@ namespace TestOrdersApp
         }
 
         /// <summary>
-        /// When supply CustomerName of OrderItemAddRequest is Empty, it should throw ArgumentException
+        /// When supply OrderId of OrderItemAddRequest is Empty, it should throw ArgumentException
         /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData("")] // passing parameters to the tet method
-        public async Task CreateOrderItem_CustomerNameIsEmptyAsync(string? customerName)
+        [Fact]
+        public async Task CreateOrderItem_OrderIdIsEmptyAsync()
         {
+
             // 1. Arrange
             OrderItemAddRequest OrderItemAddRquest = _autoFixture.Build<OrderItemAddRequest>().Create();
+            OrderItemAddRquest.OrderId = new Guid(); // new guid is empty guid(Guid.empty), it's defferent with Guid.NewGuid
 
             // 2.Act
             Func<Task> action = async () =>
@@ -79,76 +84,15 @@ namespace TestOrdersApp
         }
 
         /// <summary>
-        /// When  supply CustomerName is greater than 50 character, it should throw ArgumentException.
-        /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData("Nicholas Unless-Jesus-Christ-Had-Died-For-Thee-Thou-Hadst-Been-Damned Barbon")] //passing parameters to the tet method
-        public async Task CreateOrderItem_CustomerNameIsOverSizeAsync(string? customerName)
-        {
-            // 1. Arrange
-            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>().Create();
-
-            // 2.Act
-            Func<Task> action = async () =>
-            {
-                await _orderItemsService.AddOrderItem(OrderRquest);
-            };
-
-            // 3. Assert
-            await action.Should().ThrowAsync<ArgumentException>();
-        }
-
-        /// <summary>
-        /// When supply OrderNumber is empty, it should throw ArgumentException
+        /// When  supply ProductName is blank, it should throw ArgumentException.
         /// </summary>
         [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
         [InlineData("")] //passing parameters to the tet method
-        public async Task CreateOrderItem_OrderNumberEmptyAsync(string? orderNumber)
+        public async Task CreateOrderItem_ProductNameIsBlanskAsync(string? productName)
         {
             // 1. Arrange
-            OrderItemAddRequest OrderItemAddRquest = _autoFixture.Build<OrderItemAddRequest>().Create();
-
-            // 2.Act
-            Func<Task> action = async () =>
-            {
-                await _orderItemsService.AddOrderItem(OrderItemAddRquest);
-            };
-
-            // 3. Assert
-            await action.Should().ThrowAsync<ArgumentException>();
-
-        }
-
-        /// <summary>
-        /// When supply orderNumber is not valid format, it should throw ArgumentException.
-        /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData("OrderItem_")] //passing parameters to the tet method
-        public async Task CreateOrderItem_OrderNumberIsNotValidAsync(string? orderNumber)
-        {
-            // 1. Arrange
-            OrderItemAddRequest OrderItemAddRquest = _autoFixture.Build<OrderItemAddRequest>().Create();
-
-            // 2.Act
-            Func<Task> action = async () =>
-            {
-                await _orderItemsService.AddOrderItem(OrderItemAddRquest);
-            };
-
-
-            // 3. Assert
-            await action.Should().ThrowAsync<ArgumentException>();
-        }
-
-        /// <summary>
-        /// When supply null of orderDatetim, it should throw ArgumentException.
-        /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData(null)] //passing parameters to the tet method
-        public async Task CreateOrderItem_OrderDatetimeIsnullAsync(DateTime? orderDatetime)
-        {
-            // 1. Arrange
-            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>().Create();
+            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>()
+                .With(temp => temp.ProductName, productName).Create();
 
             // 2.Act
             Func<Task> action = async () =>
@@ -161,15 +105,59 @@ namespace TestOrdersApp
         }
 
         /// <summary>
-        /// When supply total amount is nagative number, it should throw ArgumentException.
+        /// When  supply ProductName is greater than 50 character, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData("Nicholas Unless-Jesus-Christ-Had-Died-For-Thee-Thou-Hadst-Been-Damned Barbon")] //passing parameters to the tet method
+        public async Task CreateOrderItem_ProductNameIsOverSizeAsync(string? productName)
+        {
+            // 1. Arrange
+            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>()
+                .With(temp => temp.ProductName, productName).Create();
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.AddOrderItem(OrderRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+        }
+
+        /// <summary>
+        /// When supply Quantity is nagative number, it should throw ArgumentException
         /// </summary>
         [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
         [InlineData(-1)] //passing parameters to the tet method
-        public async Task CreateOrderItem_TotalAmountIsNagativeAsync(int totalAmount)
+        public async Task CreateOrderItem_QuantityIsNagativeAsync(int quantity)
         {
-
             // 1. Arrange
-            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>().Create();
+            OrderItemAddRequest OrderItemAddRquest = _autoFixture.Build<OrderItemAddRequest>()
+                .With(temp => temp.Quantity, quantity).Create();
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.AddOrderItem(OrderItemAddRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+
+        }
+
+
+        /// <summary>
+        /// When supply UnitPrice is nagative number, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(-1)] //passing parameters to the tet method
+        public async Task CreateOrderItem_UnitPriceIsNagativeAsync(decimal unitPrice)
+        {
+            // 1. Arrange
+            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>()
+               .With(temp => temp.UnitPrice, unitPrice).Create();
 
             // 2.Act
             Func<Task> action = async () =>
@@ -179,7 +167,69 @@ namespace TestOrdersApp
 
             // 3. Assert
             await action.Should().ThrowAsync<ArgumentException>();
+        }
 
+        /// <summary>
+        /// When supply UnitPrice is Over max value, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(100000001)] //passing parameters to the tet method
+        public async Task CreateOrderItem_UnitPriceIsOverValueAsync(decimal unitPrice)
+        {
+            // 1. Arrange
+            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>()
+               .With(temp => temp.UnitPrice, unitPrice).Create();
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.AddOrderItem(OrderRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+        }
+
+        /// <summary>
+        /// When supply TotalPrice is nagative number, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(-1)] //passing parameters to the tet method
+        public async Task CreateOrderItem_TotalPriceIsNagativeAsync(decimal totalPrice)
+        {
+            // 1. Arrange
+            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>()
+               .With(temp => temp.TotalPrice, totalPrice).Create();
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.AddOrderItem(OrderRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+        }
+
+        /// <summary>
+        /// When supply TotalPrice is Over max value, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(100000001)] //passing parameters to the tet method
+        public async Task CreateOrderItem_TotalPriceIsOverValueAsync(decimal totalPrice)
+        {
+            // 1. Arrange
+            OrderItemAddRequest OrderRquest = _autoFixture.Build<OrderItemAddRequest>()
+               .With(temp => temp.TotalPrice, totalPrice).Create();
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.AddOrderItem(OrderRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
         }
 
         /// <summary>
@@ -201,18 +251,18 @@ namespace TestOrdersApp
 
         #region UpdateOrderItem
         /// <summary>
-        /// When supply OrderItemUpdateRequest is null, it should throw ArgumentNullException
+        /// When supply OrderItemAddRequest is null, it should throw ArgumentNullException
         /// </summary>
         [Fact]
         public async Task UpdateOrderItem_OrderItemUpdateRequestNullAsync()
         {
             // 1. Arrange
-            OrderItemUpdateRequest OrderItemUpdateRequest = null;
+            OrderItemUpdateRequest orderItemUpdateRquest = null;
 
             // 2.Act
             Func<Task> action = async () =>
             {
-                await _orderItemsService.UpdateOrderItem(OrderItemUpdateRequest);
+                await _orderItemsService.UpdateOrderItem(orderItemUpdateRquest);
             };
 
             // 3. Assert
@@ -221,43 +271,20 @@ namespace TestOrdersApp
         }
 
         /// <summary>
-        /// When supply CustomerName of OrderItemUpdateRequest is Empty, it should throw ArgumentException
-        /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData("")] // passing parameters to the tet method
-        public async Task UpdateOrderItem_CustomerNameIsEmptyAsync(string? customerName)
-        {
-            // 1. Arrange
-            OrderItemUpdateRequest OrderItemAddRquest = _autoFixture.Build<OrderItemUpdateRequest>().Create();
-
-            // 2.Act
-            Func<Task> action = async () =>
-            {
-                await _orderItemsService.UpdateOrderItem(OrderItemAddRquest);
-            };
-
-            // 3. Assert
-            await action.Should().ThrowAsync<ArgumentException>();
-
-        }
-
-        /// <summary>
-        /// When supply OrderID of OrderItemUpdateRequest is Empty, it should throw ArgumentException
+        /// When supply OrderItemId of OrderItemAddRequest is Empty, it should throw ArgumentException
         /// </summary>
         [Fact]
-        public async Task UpdateOrderItem_OrderIdIsEmptyAsync()
+        public async Task UpdateOrderItem_OrderItemIdIsEmptyAsync()
         {
+
             // 1. Arrange
-            Guid orderId = new Guid();
-
-            OrderItemUpdateRequest OrderItemUpdateRequest = CreateOrderItemUpdateRequest();
-
-            OrderItemUpdateRequest.OrderId =  orderId;
+            OrderItemUpdateRequest orderItemUpdateRquest = CreateOrderItemUpdateRequest();
+            orderItemUpdateRquest.OrderItemId = new Guid(); // new guid is empty guid(Guid.empty), it's defferent with Guid.NewGuid
 
             // 2.Act
             Func<Task> action = async () =>
             {
-                await _orderItemsService.UpdateOrderItem(OrderItemUpdateRequest);
+                await _orderItemsService.UpdateOrderItem(orderItemUpdateRquest);
             };
 
             // 3. Assert
@@ -266,34 +293,15 @@ namespace TestOrdersApp
         }
 
         /// <summary>
-        /// When  supply CustomerName is greater than 50 character, it should throw ArgumentException.
-        /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData("Nicholas Unless-Jesus-Christ-Had-Died-For-Thee-Thou-Hadst-Been-Damned Barbon")] //passing parameters to the tet method
-        public async Task UpdateOrderItem_CustomerNameIsOverSizeAsync(string? customerName)
-        {
-            // 1. Arrange
-            OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
-
-            // 2.Act
-            Func<Task> action = async () =>
-            {
-                await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
-            };
-
-            // 3. Assert
-            await action.Should().ThrowAsync<ArgumentException>();
-        }
-
-        /// <summary>
-        /// When supply OrderNumber is empty, it should throw ArgumentException
+        /// When  supply ProductName is blank, it should throw ArgumentException.
         /// </summary>
         [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
         [InlineData("")] //passing parameters to the tet method
-        public async Task UpdateOrderItem_OrderNumberEmptyAsync(string? orderNumber)
+        public async Task UpdateOrderItem_ProductNameIsBlanskAsync(string? productName)
         {
             // 1. Arrange
             OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.ProductName = productName;
 
             // 2.Act
             Func<Task> action = async () =>
@@ -303,40 +311,18 @@ namespace TestOrdersApp
 
             // 3. Assert
             await action.Should().ThrowAsync<ArgumentException>();
-
         }
 
         /// <summary>
-        /// When supply orderNumber is not valid format, it should throw ArgumentException.
+        /// When  supply ProductName is greater than 50 character, it should throw ArgumentException.
         /// </summary>
         [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData("Order0_1")] //passing parameters to the tet method
-        public async Task UpdateOrderItem_OrderNumberIsNotValidAsync(string? orderNumber)
+        [InlineData("Nicholas Unless-Jesus-Christ-Had-Died-For-Thee-Thou-Hadst-Been-Damned Barbon")] //passing parameters to the tet method
+        public async Task UpdateOrderItem_ProductNameIsOverSizeAsync(string? productName)
         {
             // 1. Arrange
             OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
-
-
-            // 2.Act
-            Func<Task> action = async () =>
-            {
-                await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
-            };
-
-
-            // 3. Assert
-            await action.Should().ThrowAsync<ArgumentException>();
-        }
-
-        /// <summary>
-        /// When supply null of orderDatetim, it should throw ArgumentException.
-        /// </summary>
-        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
-        [InlineData(null)] //passing parameters to the tet method
-        public async Task UpdateOrderItem_OrderDatetimeIsnullAsync(DateTime? orderDatetime)
-        {
-            // 1. Arrange
-            OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.ProductName = productName;
 
             // 2.Act
             Func<Task> action = async () =>
@@ -349,15 +335,15 @@ namespace TestOrdersApp
         }
 
         /// <summary>
-        /// When supply total amount is nagative number, it should throw ArgumentException.
+        /// When supply Quantity is nagative number, it should throw ArgumentException
         /// </summary>
         [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
         [InlineData(-1)] //passing parameters to the tet method
-        public async Task UpdateOrderItem_TotalAmountIsNagativeAsync(int totalAmount)
+        public async Task UpdateOrderItem_QuantityIsNagativeAsync(int quantity)
         {
-
             // 1. Arrange
             OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.Quantity = quantity;
 
             // 2.Act
             Func<Task> action = async () =>
@@ -368,6 +354,91 @@ namespace TestOrdersApp
             // 3. Assert
             await action.Should().ThrowAsync<ArgumentException>();
 
+        }
+
+
+        /// <summary>
+        /// When supply UnitPrice is nagative number, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(-1)] //passing parameters to the tet method
+        public async Task UpdateOrderItem_UnitPriceIsNagativeAsync(decimal unitPrice)
+        {
+            // 1. Arrange
+            OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.UnitPrice = unitPrice;
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+        }
+
+        /// <summary>
+        /// When supply UnitPrice is Over max value, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(100000001)] //passing parameters to the tet method
+        public async Task UpdateOrderItem_UnitPriceIsOverValueAsync(decimal unitPrice)
+        {
+            // 1. Arrange
+            OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.UnitPrice = unitPrice;
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+        }
+
+        /// <summary>
+        /// When supply TotalPrice is nagative number, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(-1)] //passing parameters to the tet method
+        public async Task UpdateOrderItem_TotalPriceIsNagativeAsync(decimal totalPrice)
+        {
+            // 1. Arrange
+            OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.TotalPrice = totalPrice;
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
+        }
+
+        /// <summary>
+        /// When supply TotalPrice is Over max value, it should throw ArgumentException.
+        /// </summary>
+        [Theory] // Using [Theory] instead of [Fact] that you can pass parameters to the test method
+        [InlineData(100000001)] //passing parameters to the tet method
+        public async Task UpdateOrderItem_TotalPriceIsOverValueAsync(decimal totalPrice)
+        {
+            // 1. Arrange
+            OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
+            orderUpdateRquest.TotalPrice = totalPrice;
+
+            // 2.Act
+            Func<Task> action = async () =>
+            {
+                await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
+            };
+
+            // 3. Assert
+            await action.Should().ThrowAsync<ArgumentException>();
         }
 
         /// <summary>
@@ -378,7 +449,7 @@ namespace TestOrdersApp
         {
             // 1. Arrange
             OrderItemUpdateRequest orderUpdateRquest = CreateOrderItemUpdateRequest();
-            orderUpdateRquest.OrderId = Guid.NewGuid();
+            orderUpdateRquest.OrderItemId = Guid.NewGuid();
 
             // 2.Act
             var oderUpdateResponse =   await _orderItemsService.UpdateOrderItem(orderUpdateRquest);
@@ -404,13 +475,13 @@ namespace TestOrdersApp
 
             //// 3. Update Order
             OrderItemUpdateRequest OrderUpdateRquest = CreateOrderItemUpdateRequest();
-            OrderUpdateRquest.OrderId = OrderItemResponse.OrderId;
+            OrderUpdateRquest.OrderItemId = OrderItemResponse.OrderItemId;
 
 
             OrderItemResponse OrderUpdateResponse = await _orderItemsService.UpdateOrderItem(OrderUpdateRquest);
 
             // 3. Assert
-            OrderUpdateResponse.OrderId.Should().Be(OrderUpdateRquest.OrderId);
+            OrderUpdateResponse.OrderItemId.Should().Be(OrderUpdateRquest.OrderItemId);
         }
         #endregion
 
@@ -553,10 +624,10 @@ namespace TestOrdersApp
             // 2. Add Order
             OrderItemResponse OrderItemResponse = await _orderItemsService.AddOrderItem(OrderItemAddRquest);
 
-            // 1.Act
-            OrderItemResponse orderGetResponse = await _orderItemsService.GetOrderItemByOrderItemId(OrderItemResponse.OrderId);
+            // 3.Act
+            OrderItemResponse orderGetResponse = await _orderItemsService.GetOrderItemByOrderItemId(OrderItemResponse.OrderItemId);
 
-            // 2.Assert
+            // 4.Assert
             orderGetResponse.OrderId.Should().NotBe(Guid.Empty);
         }
         #endregion
