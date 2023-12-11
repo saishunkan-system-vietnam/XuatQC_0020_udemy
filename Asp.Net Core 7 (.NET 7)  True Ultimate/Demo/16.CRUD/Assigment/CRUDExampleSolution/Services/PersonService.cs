@@ -4,27 +4,15 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using Services.Helper;
-using System.Diagnostics;
-using System.Threading.Channels;
 
 namespace Services
 {
     public class PersonService : IPersonService
     {
         private readonly PersonDBContext _db;
-        private readonly ICountriesService _countryService;
-        public PersonService(PersonDBContext personDBContext, ICountriesService countriesService)
+        public PersonService(PersonDBContext personDBContext)
         {
             _db = personDBContext;
-            _countryService = countriesService;
-        }
-
-        private PersonResponse ConvertToPersonResponse(Person person)
-        {
-            PersonResponse personResponse = person.ToPersonResponse();
-            personResponse.Country = _countryService.GetCountryById(person.CountryID)?.CountryName;
-
-            return personResponse;
         }
 
         public PersonResponse AddPerson(PersonAddRequest personAddRequest)
@@ -48,15 +36,18 @@ namespace Services
             _db.Persons.Add(person);
             _db.SaveChanges();
             // return personResonse
-            return this.ConvertToPersonResponse(person);
+            return person.ToPersonResponse();
         }
 
         public List<PersonResponse> GetAllPersons()
         {
             List<PersonResponse> personresponses = new List<PersonResponse>();
-            foreach (var person in _db.Persons.ToList())
+
+            // using Eager loading
+            var persons = _db.Persons.Include("Country").ToList();
+            foreach (var person in persons)
             {
-               personresponses.Add(this.ConvertToPersonResponse(person));
+               personresponses.Add(person.ToPersonResponse());
             }
             return personresponses;
 
@@ -67,11 +58,12 @@ namespace Services
         {
             if (personId == null) { return null; }
 
-            Person? person = _db.Persons.FirstOrDefault(x => x.PersonID == personId);
+            // using Eager loading
+            Person? person = _db.Persons.Include("Country").FirstOrDefault(x => x.PersonID == personId);
 
             if (person == null) { return null; }
 
-            return this.ConvertToPersonResponse(person);
+            return person.ToPersonResponse();
         }
 
         public List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString)
@@ -115,8 +107,8 @@ namespace Services
 
                 case nameof(Person.CountryID):
                     matchingPersons = allPersons.Where(temp =>
-                    (!string.IsNullOrEmpty(temp.Country) ?
-                    temp.Country.Contains(searchString,
+                    (!string.IsNullOrEmpty(temp.CountryName) ?
+                    temp.CountryName.Contains(searchString,
                     StringComparison.OrdinalIgnoreCase) : true)).ToList();
                     break;
 
@@ -181,10 +173,10 @@ namespace Services
                 => allPersons.OrderByDescending(temp => temp.ReciveNewsLetters.ToString(), StringComparer.OrdinalIgnoreCase).ToList(),
 
                 // Country
-                (nameof(PersonResponse.Country), SortedOrderOptions.ASC)
-                 => allPersons.OrderBy(temp => temp.Country.ToString(), StringComparer.OrdinalIgnoreCase).ToList(),
-                (nameof(PersonResponse.Country), SortedOrderOptions.DESC)
-                => allPersons.OrderByDescending(temp => temp.Country.ToString(), StringComparer.OrdinalIgnoreCase).ToList(),
+                (nameof(PersonResponse.CountryName), SortedOrderOptions.ASC)
+                 => allPersons.OrderBy(temp => temp.CountryName.ToString(), StringComparer.OrdinalIgnoreCase).ToList(),
+                (nameof(PersonResponse.CountryName), SortedOrderOptions.DESC)
+                => allPersons.OrderByDescending(temp => temp.CountryName.ToString(), StringComparer.OrdinalIgnoreCase).ToList(),
 
                 // Gender
                 (nameof(PersonResponse.Gender), SortedOrderOptions.ASC)

@@ -9,8 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICountriesService, CountriesService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
-builder.Services.AddScoped<IFinnhubService, FinnhubService>();
-builder.Services.AddScoped<IStocksService, StocksService>();
 
 builder.Services.AddDbContext<PersonDBContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

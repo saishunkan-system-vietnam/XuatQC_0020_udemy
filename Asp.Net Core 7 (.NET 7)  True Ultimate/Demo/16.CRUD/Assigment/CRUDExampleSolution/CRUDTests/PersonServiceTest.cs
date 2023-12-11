@@ -1163,7 +1163,7 @@ namespace CRUDTests
             }
 
             // print person response list from add
-            personResponseList_fromAdded = personResponseList_fromAdded.OrderBy(temp => temp.Country).ToList();
+            personResponseList_fromAdded = personResponseList_fromAdded.OrderBy(temp => temp.CountryName).ToList();
             _testOutputHelper.WriteLine("Expected: ");
             foreach (PersonResponse personResponse_fromAdded in personResponseList_fromAdded)
             {
@@ -1271,7 +1271,7 @@ namespace CRUDTests
             }
 
             // print person response list from add
-            personResponseList_fromAdded = personResponseList_fromAdded.OrderByDescending(temp => temp.Country).ToList();
+            personResponseList_fromAdded = personResponseList_fromAdded.OrderByDescending(temp => temp.CountryName).ToList();
             _testOutputHelper.WriteLine("Expected: ");
             foreach (PersonResponse personResponse_fromAdded in personResponseList_fromAdded)
             {

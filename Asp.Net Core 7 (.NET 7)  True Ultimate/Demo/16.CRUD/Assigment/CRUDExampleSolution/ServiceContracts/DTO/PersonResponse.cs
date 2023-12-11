@@ -14,7 +14,7 @@ namespace ServiceContracts.DTO
         public DateTime? DateOfBirth { get; set; }
         public string? Gender { get; set; }
         public Guid? CountryID { get; set; }
-        public string? Country { get; set; }
+        public string? CountryName { get; set; }
         public string? Address { get; set; }
         public bool ReciveNewsLetters { get; set; }
         public double? Age { get; set; }
@@ -45,7 +45,7 @@ namespace ServiceContracts.DTO
         public override string ToString()
         {
             return $"Person ID: {PersonID}, Person Name: {PersonName}, Email: {Email}, Date of birth: {DateOfBirth?.ToString("yyyy/MM/dd")}," +
-                $" Gender: {Gender} CountryID: {CountryID}, Country: {Country}, Address: {Address}, Receive new letter: {ReciveNewsLetters}";
+                $" Gender: {Gender} CountryID: {CountryID}, Country: {CountryName}, Address: {Address}, Receive new letter: {ReciveNewsLetters}";
         }
 
         public PersonUpdateRequest ToPersonUpdateRequest()
@@ -71,6 +71,7 @@ namespace ServiceContracts.DTO
                 DateOfBirth = person.DateOfBirth,
                 Gender = person.Gender,
                 CountryID = person.CountryID,
+                CountryName = person.Country.CountryName,
                 Address = person.Address,
                 ReciveNewsLetters = person.ReciveNewsLetters,
                 Age = (person.DateOfBirth != null) ? Math.Round((DateTime.Now - person.DateOfBirth.Value).TotalDays / 365.25) : null

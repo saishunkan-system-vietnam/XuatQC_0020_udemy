@@ -71,7 +71,7 @@
 
                 @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
                 {
-                {"ColumnName", nameof(PersonResponse.Country)},
+                {"ColumnName", nameof(PersonResponse.CountryName)},
                 {"DisplayName", "Country"}
                 })
 
@@ -98,7 +98,7 @@
                     <td style="width:13%">@person.DateOfBirth?.ToString("yyyy-MM-dd")</td>
                     <td style="width:9%">@person.Age</td>
                     <td style="width:9%">@person.Gender</td>
-                    <td style="width:10%">@person.Country</td>
+                    <td style="width:10%">@person.CountryName</td>
                     <td style="width:18%">@person.Address</td>
                     <td style="width:13%">@person.ReciveNewsLetters</td>
                     <td style="width:20%">
