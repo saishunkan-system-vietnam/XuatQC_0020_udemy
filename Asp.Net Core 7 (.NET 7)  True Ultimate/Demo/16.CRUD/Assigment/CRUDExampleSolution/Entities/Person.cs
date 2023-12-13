@@ -21,6 +21,7 @@ namespace Entities
         // unique
         public Guid? CountryID { get; set; }
 
+        [ForeignKey("CountryID")]
         public Country? Country { get; set; }
 
         [StringLength(200)]

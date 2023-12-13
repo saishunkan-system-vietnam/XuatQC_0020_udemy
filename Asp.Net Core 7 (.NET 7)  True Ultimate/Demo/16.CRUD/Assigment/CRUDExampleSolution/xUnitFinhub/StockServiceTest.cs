@@ -1,3 +1,6 @@
+using Entities;
+using EntityFrameworkCoreMock;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using Services;
@@ -9,7 +12,22 @@ namespace xUnitFinhub
         private readonly IStocksService _stockService;
         public StockServiceTest()
         {
-            _stockService = new StocksService();
+            // Create init buy order object to mock data
+            var buyOrderInitialData = new List<BuyOrder>() { };
+
+            // Create init sell order object to mock data
+            var sellOrderInitialData = new List<SellOrder>() { };
+
+            // create DB context mock
+            DbContextMock<TradeOrderDBContext> dbContextMock = new DbContextMock<TradeOrderDBContext>(
+                    new DbContextOptionsBuilder<TradeOrderDBContext>().Options
+                );
+
+            TradeOrderDBContext dbContext = dbContextMock.Object;
+            dbContextMock.CreateDbSetMock(temp => temp.BuyOrders, buyOrderInitialData);
+            dbContextMock.CreateDbSetMock(temp => temp.SellOrders, sellOrderInitialData);
+
+            _stockService = new StocksService(dbContext);
         }
 
         #region createBuyOrder

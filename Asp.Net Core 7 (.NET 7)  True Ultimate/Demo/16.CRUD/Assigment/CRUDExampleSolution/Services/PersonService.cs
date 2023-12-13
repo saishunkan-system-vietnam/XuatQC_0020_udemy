@@ -44,14 +44,12 @@ namespace Services
             List<PersonResponse> personresponses = new List<PersonResponse>();
 
             // using Eager loading
-            var persons = _db.Persons.Include("Country").ToList();
+            var persons = _db.Persons.Include(nameof(Country)).ToList();
             foreach (var person in persons)
             {
-               personresponses.Add(person.ToPersonResponse());
+                personresponses.Add(person.ToPersonResponse());
             }
             return personresponses;
-
-            // return _db.Persons.Select(person => ConvertToPersonResponse(person)).ToList();
         }
 
         public PersonResponse? GetPersonById(Guid? personId)
@@ -59,7 +57,7 @@ namespace Services
             if (personId == null) { return null; }
 
             // using Eager loading
-            Person? person = _db.Persons.Include("Country").FirstOrDefault(x => x.PersonID == personId);
+            Person? person = _db.Persons.Include(nameof(Country)).FirstOrDefault(x => x.PersonID == personId);
 
             if (person == null) { return null; }
 
@@ -205,30 +203,30 @@ namespace Services
             ValidationHelper.ModelValidation(personUpdateRequest);
 
             // if personId is not valid, it should throw argument exception
-            //PersonResponse personResponse_fromGet = GetPersonById(personUpdateRequest.PersonID);
-            //if (personResponse_fromGet == null) { throw new ArgumentException("PersonID is not valid"); }
+            var existingEntity = _db.Set<Person>().Include("Country").FirstOrDefault(x => x.PersonID == personUpdateRequest.PersonID);
+            if (existingEntity == null) { throw new ArgumentException("PersonID is not valid"); }
 
             // if person name is null or empty, it should throw argument exception
             if (string.IsNullOrEmpty(personUpdateRequest.PersonName)) { throw new ArgumentException("PersonName can not be null or blank"); }
 
             Person personUpdate = personUpdateRequest.ToPerson();
 
-            _db.Update(personUpdate);
-            //_db.Attach(personUpdate);
-            //_db.Entry(personUpdate).State = EntityState.Modified;
-
+            _db.Entry(existingEntity).CurrentValues.SetValues(personUpdate);
             _db.SaveChanges();
 
-            return personUpdate.ToPersonResponse();
+            return existingEntity.ToPersonResponse();
         }
 
         public bool DetletePerson(Guid personID)
         {
-            PersonResponse personResponse_fromGet = GetPersonById(personID);
+            //PersonResponse personResponse_fromGet = GetPersonById(personID);
 
-            if (personResponse_fromGet == null) { return false; }
-            PersonUpdateRequest personUpdateRequest = personResponse_fromGet.ToPersonUpdateRequest();
-            Person person = personUpdateRequest.ToPerson();
+            //if (personResponse_fromGet == null) { return false; }
+            //PersonUpdateRequest personUpdateRequest = personResponse_fromGet.ToPersonUpdateRequest();
+            //Person person = personUpdateRequest.ToPerson();
+            var person = _db.Set<Person>().FirstOrDefault(x => x.PersonID == personID);
+
+            if (person == null) { return false; }
 
             _db.Persons.Remove(person);
             _db.SaveChanges();

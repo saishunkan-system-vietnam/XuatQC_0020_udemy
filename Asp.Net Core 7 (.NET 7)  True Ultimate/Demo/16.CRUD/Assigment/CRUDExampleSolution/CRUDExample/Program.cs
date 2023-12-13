@@ -12,7 +12,7 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddDbContext<PersonDBContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    // options.UseLazyLoadingProxies();
 });
 
 
