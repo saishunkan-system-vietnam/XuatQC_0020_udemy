@@ -1,5 +1,6 @@
 ﻿using Entities;
 using RepositoryContracts;
+using System.Collections.Generic;
 
 namespace Repositories
 {
@@ -33,7 +34,8 @@ namespace Repositories
 
         public async Task<List<Order>> GetAllOrders()
         {
-            return _context.Orders.ToList();
+            var orders = _context.Orders.ToList();
+            return orders;
         }
 
         public async Task<Order?> GetOrderByOrderId(Guid orderId)

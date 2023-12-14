@@ -42,7 +42,7 @@ namespace ServiceContracts.DTO
         /// <summary>
         /// the list of order items related to the order
         /// </summary>
-        public List<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
+        public List<OrderItemResponse>? OrderItems { get; set; } = new List<OrderItemResponse>();
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ServiceContracts.DTO
                 OrderNumber = OrderNumber,
                 CustomerName = CustomerName,
                 OrderDate = (DateTime?)OrderDate,
-                TotalAmount = TotalAmount,
+                TotalAmount = TotalAmount
             };
         }
     }
@@ -75,6 +75,16 @@ namespace ServiceContracts.DTO
         /// <returns>An <OrderResponse"/> object.</returns>
         public static OrderResponse ToOrderResponse(this Order order)
         {
+            List<OrderItemResponse>? orderItems = null;
+
+            if (order.OrderItems != null)
+            {
+                orderItems = new List<OrderItemResponse>();
+                foreach (var orderItem in order.OrderItems)
+                {
+                    orderItems.Add(orderItem.ToOrderItemResponse());
+                }
+            }
             return new OrderResponse
             {
                 OrderId = order.OrderId,
@@ -82,6 +92,7 @@ namespace ServiceContracts.DTO
                 CustomerName = order.CustomerName,
                 OrderDate = (DateTime)order.OrderDate,
                 TotalAmount = order.TotalAmount,
+                OrderItems = orderItems
             };
         }
 

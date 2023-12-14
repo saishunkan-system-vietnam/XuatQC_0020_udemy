@@ -47,7 +47,7 @@ namespace Entities
         [Column(TypeName = "decimal")]
         public decimal TotalAmount { get; set; }
 
-        public virtual ICollection<OrderItem> OrderItems { get; set; } 
+        public virtual ICollection<OrderItem>? OrderItems { get; set; } 
 
 
     }

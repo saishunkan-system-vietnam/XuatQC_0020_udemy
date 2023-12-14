@@ -31,8 +31,7 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
     {
         sqlOption.EnableRetryOnFailure();
     });
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-    
+    options.UseLazyLoadingProxies();
 });
 
 
