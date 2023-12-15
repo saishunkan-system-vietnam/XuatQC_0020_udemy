@@ -12,7 +12,7 @@ namespace Entities
     {
         /// <summary>
         /// Unique identifier of the order
-        /// </summary>
+        /// </summary>x
         [Key]
         public Guid OrderId { get; set; }
 
