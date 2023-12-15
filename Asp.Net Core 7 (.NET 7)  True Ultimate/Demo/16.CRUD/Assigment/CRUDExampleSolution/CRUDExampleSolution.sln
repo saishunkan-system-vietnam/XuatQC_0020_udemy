@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderApp", "OrderApp\OrderA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestOrdersApp", "TestOrdersApp\TestOrdersApp.csproj", "{B42A59D0-D931-4638-B071-7C2B01F8B911}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exceptions", "Exceptions\Exceptions.csproj", "{B186CB24-EBD7-4E96-936E-099F9D21EBC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{B42A59D0-D931-4638-B071-7C2B01F8B911}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B42A59D0-D931-4638-B071-7C2B01F8B911}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B42A59D0-D931-4638-B071-7C2B01F8B911}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B186CB24-EBD7-4E96-936E-099F9D21EBC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B186CB24-EBD7-4E96-936E-099F9D21EBC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B186CB24-EBD7-4E96-936E-099F9D21EBC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B186CB24-EBD7-4E96-936E-099F9D21EBC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

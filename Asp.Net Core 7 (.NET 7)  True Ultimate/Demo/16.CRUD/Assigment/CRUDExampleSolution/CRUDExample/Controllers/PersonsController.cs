@@ -21,7 +21,7 @@ namespace CRUDExample.Controllers
         }
 
         [Route("index")]
-        [Route("test_temp")]
+        [Route("/")]
         public async Task<IActionResult> Index(string searchBy, string? searchValue,
             string sortBy = nameof(PersonResponse.PersonName), SortedOrderOptions sortOrder = SortedOrderOptions.ASC)
         {
@@ -109,6 +109,7 @@ namespace CRUDExample.Controllers
 
             if (ModelState.IsValid)
             {
+                personUpdateRequest.PersonID = Guid.NewGuid();
                 PersonResponse updatePersonResponse = _personService.UpdatePerson(personUpdateRequest);
                 return RedirectToAction("Index", "Persons");
             }

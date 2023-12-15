@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -204,7 +205,7 @@ namespace Services
 
             // if personId is not valid, it should throw argument exception
             var existingEntity = _db.Set<Person>().Include("Country").FirstOrDefault(x => x.PersonID == personUpdateRequest.PersonID);
-            if (existingEntity == null) { throw new ArgumentException("PersonID is not valid"); }
+            if (existingEntity == null) { throw new InvalidPersonIDException("PersonID is not valid"); }
 
             // if person name is null or empty, it should throw argument exception
             if (string.IsNullOrEmpty(personUpdateRequest.PersonName)) { throw new ArgumentException("PersonName can not be null or blank"); }

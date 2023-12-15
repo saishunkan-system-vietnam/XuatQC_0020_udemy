@@ -18,7 +18,7 @@ namespace CRUDExample.Controllers
         }
 
         // Example #1:
-        [Route("/")]
+        [Route("index")]
         public ContentResult Index()
         {
             Response.StatusCode = 200;
