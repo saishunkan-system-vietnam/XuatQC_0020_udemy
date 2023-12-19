@@ -213,5 +213,10 @@ namespace Services
         {
             return _personRepository.DetletePerson(personID);
         }
+
+        public bool IsRegistedMail(string email)
+        {
+            return _personRepository.IsRegistedMail(email);
+        }
     }
 }

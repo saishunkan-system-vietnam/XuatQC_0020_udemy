@@ -157,6 +157,26 @@ namespace CRUDExample.Controllers
             };
         }
 
+
+        /// <summary>
+        /// Function that called by model property using Remote attribute
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult IsExistedEmail(string email)
+        {
+            // check if email already registered
+            bool isExisted = _personService.IsRegistedMail(email);
+
+            if (isExisted)
+            {
+                return Json("Email already registered, please try another email address"); //  return error message 
+            }
+
+            return Json(true);
+        }
+
         private List<CountryResponse> GetAllCountries()
         {
             List<CountryResponse> countries = _countriesService.GetAllCountries();
@@ -164,5 +184,6 @@ namespace CRUDExample.Controllers
             ViewBag.Countries = countries.Select(temp => new SelectListItem() { Text = temp.CountryName, Value = temp.CountryID.ToString() });
             return countries;
         }
+
     }
 }

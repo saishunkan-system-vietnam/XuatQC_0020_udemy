@@ -42,5 +42,12 @@ namespace RepositoryContracts
         /// <param name="personID">Person id to delete</param>
         /// <returns>true if delete success, fail if delete fail</returns>
         bool DetletePerson(Guid personID);
+
+        /// <summary>
+        /// Check if existed mail from user request
+        /// </summary>
+        /// <param name="email">email address</param>
+        /// <returns>true if existed, false if not existed</returns>
+        bool IsRegistedMail(string email);
     }
 }

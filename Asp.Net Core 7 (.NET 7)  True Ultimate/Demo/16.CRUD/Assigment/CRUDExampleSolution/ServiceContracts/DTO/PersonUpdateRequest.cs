@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Mvc;
 using ServiceContracts.Enums;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace ServiceContracts.DTO
 
         [Required(ErrorMessage = "Email can not be blank")]
         [EmailAddress(ErrorMessage = "Email address should be valid value")]
+        [Remote(action: "IsExistedEmail", controller: "Persons")] // remote attribute handle validation by specigy action(validation action method) and controller to
         public string? Email { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public GenderOptions? Gender { get; set; }

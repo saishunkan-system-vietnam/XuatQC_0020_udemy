@@ -50,6 +50,14 @@ namespace Repositories
             return _db.Persons.Include(nameof(Country)).FirstOrDefault(x => x.PersonID == personId);
         }
 
+        public bool IsRegistedMail(string email)
+        {
+            var person = _db.Set<Person>().FirstOrDefault(x => x.Email == email);
+
+            if (person == null) { return false; }
+            return true;
+        }
+
         public Person? UpdatePerson(Person? personUpdateRequest)
         {
             // if personId is not valid, it should throw argument exception
