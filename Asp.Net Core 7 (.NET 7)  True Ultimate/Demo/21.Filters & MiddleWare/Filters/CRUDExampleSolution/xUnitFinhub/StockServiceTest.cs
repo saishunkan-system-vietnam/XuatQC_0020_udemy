@@ -7,7 +7,7 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using Services;
 
-namespace xUnitFinhub
+namespace TestTradeOrders
 {
     public class StockServiceTest
     {

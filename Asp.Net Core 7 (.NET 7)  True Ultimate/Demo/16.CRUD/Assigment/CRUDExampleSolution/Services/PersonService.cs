@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Exceptions;
 using Microsoft.EntityFrameworkCore;
+using RepositoryContracts;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
@@ -10,10 +11,10 @@ namespace Services
 {
     public class PersonService : IPersonService
     {
-        private readonly PersonDBContext _db;
-        public PersonService(PersonDBContext personDBContext)
+        private readonly IPersonRepository _personRepository;
+        public PersonService(IPersonRepository personRepository)
         {
-            _db = personDBContext;
+            _personRepository = personRepository;
         }
 
         public PersonResponse AddPerson(PersonAddRequest personAddRequest)
@@ -27,17 +28,11 @@ namespace Services
             // Model validation
             ValidationHelper.ModelValidation(personAddRequest);
 
-            // change to person to generate person type
-            Person person = personAddRequest.ToPerson();
+            Person personRequest = personAddRequest.ToPerson();
+            Person personResponse = _personRepository.AddPerson(personRequest);
 
-            // generate new person ID
-            person.PersonID = new Guid();
-
-            // add person to person list
-            _db.Persons.Add(person);
-            _db.SaveChanges();
             // return personResonse
-            return person.ToPersonResponse();
+            return personResponse.ToPersonResponse();
         }
 
         public List<PersonResponse> GetAllPersons()
@@ -45,7 +40,7 @@ namespace Services
             List<PersonResponse> personresponses = new List<PersonResponse>();
 
             // using Eager loading
-            var persons = _db.Persons.Include(nameof(Country)).ToList();
+            var persons = _personRepository.GetAllPersons();
             foreach (var person in persons)
             {
                 personresponses.Add(person.ToPersonResponse());
@@ -58,7 +53,7 @@ namespace Services
             if (personId == null) { return null; }
 
             // using Eager loading
-            Person? person = _db.Persons.Include(nameof(Country)).FirstOrDefault(x => x.PersonID == personId);
+            Person? person = _personRepository.GetPersonById(personId);
 
             if (person == null) { return null; }
 
@@ -203,35 +198,20 @@ namespace Services
             // validation
             ValidationHelper.ModelValidation(personUpdateRequest);
 
-            // if personId is not valid, it should throw argument exception
-            var existingEntity = _db.Set<Person>().Include("Country").FirstOrDefault(x => x.PersonID == personUpdateRequest.PersonID);
-            if (existingEntity == null) { throw new InvalidPersonIDException("PersonID is not valid"); }
-
             // if person name is null or empty, it should throw argument exception
             if (string.IsNullOrEmpty(personUpdateRequest.PersonName)) { throw new ArgumentException("PersonName can not be null or blank"); }
 
-            Person personUpdate = personUpdateRequest.ToPerson();
+            Person personRequest = personUpdateRequest.ToPerson();
+            Person personResponse = _personRepository.UpdatePerson(personRequest);
 
-            _db.Entry(existingEntity).CurrentValues.SetValues(personUpdate);
-            _db.SaveChanges();
+            if (personResponse == null) { throw new InvalidPersonIDException("PersonID is not valid"); }
 
-            return existingEntity.ToPersonResponse();
+            return personResponse.ToPersonResponse();
         }
 
         public bool DetletePerson(Guid personID)
         {
-            //PersonResponse personResponse_fromGet = GetPersonById(personID);
-
-            //if (personResponse_fromGet == null) { return false; }
-            //PersonUpdateRequest personUpdateRequest = personResponse_fromGet.ToPersonUpdateRequest();
-            //Person person = personUpdateRequest.ToPerson();
-            var person = _db.Set<Person>().FirstOrDefault(x => x.PersonID == personID);
-
-            if (person == null) { return false; }
-
-            _db.Persons.Remove(person);
-            _db.SaveChanges();
-            return true;
+            return _personRepository.DetletePerson(personID);
         }
     }
 }

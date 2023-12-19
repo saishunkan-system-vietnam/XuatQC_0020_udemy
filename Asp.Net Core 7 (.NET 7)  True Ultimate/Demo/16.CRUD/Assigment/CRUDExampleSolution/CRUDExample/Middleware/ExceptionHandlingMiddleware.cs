@@ -10,12 +10,10 @@ namespace CRUDExample.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-        //private readonly IDiagnosticContext _diagnosticContext;
 
         public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next; // the subsequent middleware
-            //_diagnosticContext = diagnosticContext;
             _logger = logger;
         }
 
