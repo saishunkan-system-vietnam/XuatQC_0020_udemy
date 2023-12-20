@@ -50,9 +50,17 @@ namespace Repositories
             return _db.Persons.Include(nameof(Country)).FirstOrDefault(x => x.PersonID == personId);
         }
 
-        public bool IsRegistedMail(string email)
+        public bool IsRegistedMail(string email, Guid personId)
         {
-            var person = _db.Set<Person>().FirstOrDefault(x => x.Email == email);
+            // case update
+            if (personId != Guid.Empty)
+            {
+                var personUpdate = _db.Persons.FirstOrDefault(x => x.PersonID == personId && x.Email == email);
+                if(personUpdate != null) { return false; }  // case that email belong to register person(match with ID)
+            }
+
+            // case register or other person register already exist
+            var person = _db.Persons.FirstOrDefault(x => x.Email == email);
 
             if (person == null) { return false; }
             return true;

@@ -214,9 +214,9 @@ namespace Services
             return _personRepository.DetletePerson(personID);
         }
 
-        public bool IsRegistedMail(string email)
+        public bool IsRegistedMail(string email, Guid personId)
         {
-            return _personRepository.IsRegistedMail(email);
+            return _personRepository.IsRegistedMail(email, personId);
         }
     }
 }

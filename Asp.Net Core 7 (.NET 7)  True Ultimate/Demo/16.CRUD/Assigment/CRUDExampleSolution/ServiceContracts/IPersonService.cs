@@ -64,6 +64,6 @@ namespace ServiceContracts
         /// </summary>
         /// <param name="email">email address</param>
         /// <returns>true if existed, false if not existed</returns>
-        bool IsRegistedMail(string email);
+        bool IsRegistedMail(string email, Guid personId);
     }
 }

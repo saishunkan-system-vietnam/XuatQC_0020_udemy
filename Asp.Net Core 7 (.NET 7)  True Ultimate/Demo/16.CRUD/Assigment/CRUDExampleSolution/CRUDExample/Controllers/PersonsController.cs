@@ -109,12 +109,15 @@ namespace CRUDExample.Controllers
 
             if (ModelState.IsValid)
             {
-                personUpdateRequest.PersonID = Guid.NewGuid();
                 PersonResponse updatePersonResponse = _personService.UpdatePerson(personUpdateRequest);
                 return RedirectToAction("Index", "Persons");
             }
-
-            return View();
+            else
+            {
+                GetAllCountries();
+                ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return View(personResponse.ToPersonUpdateRequest());
+            }
         }
 
 
@@ -164,10 +167,10 @@ namespace CRUDExample.Controllers
         /// <param name="email"></param>
         /// <returns></returns>
         [AcceptVerbs("GET", "POST")]
-        public IActionResult IsExistedEmail(string email)
+        public IActionResult IsExistedEmail(string email, Guid personId)
         {
             // check if email already registered
-            bool isExisted = _personService.IsRegistedMail(email);
+            bool isExisted = _personService.IsRegistedMail(email, personId);
 
             if (isExisted)
             {
