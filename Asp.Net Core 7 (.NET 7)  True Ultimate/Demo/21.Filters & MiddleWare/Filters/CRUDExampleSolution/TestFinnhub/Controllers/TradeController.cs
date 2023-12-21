@@ -4,12 +4,13 @@ using Rotativa.AspNetCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using TestFinnhub.Models;
+using TradeOrders.Controllers;
 using TradeOrders.Filters;
 
 namespace TestFinnhub.Controllers
 {
     [Route("trade")]
-    public class TradeController : Controller
+    public class TradeController : BaseController
     {
         private readonly IFinnhubService _finnhubService;
         private readonly IOptions<TradingOptions> _tradingOptions;
@@ -44,7 +45,7 @@ namespace TestFinnhub.Controllers
         [Route("buy-order")]
         [HttpPost]
         [TypeFilter(typeof(CreateOrderActionFilter))]
-        public async Task<IActionResult> BuyOrder(BuyOrderRequest orderRequest)
+        public async Task<IActionResult> BuyOrder(BuyOrderRequest? orderRequest)
         {
             // It initializes "DateAndTimeOfOrder"
             orderRequest.DateAndTimeOfOrder = DateTime.Now;
