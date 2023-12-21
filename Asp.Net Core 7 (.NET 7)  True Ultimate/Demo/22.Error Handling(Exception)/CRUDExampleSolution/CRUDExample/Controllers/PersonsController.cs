@@ -109,6 +109,7 @@ namespace CRUDExample.Controllers
 
             if (ModelState.IsValid)
             {
+                // for test exception
                 personUpdateRequest.PersonID = Guid.NewGuid();
                 PersonResponse updatePersonResponse = _personService.UpdatePerson(personUpdateRequest);
                 return RedirectToAction("Index", "Persons");
