@@ -5,7 +5,7 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using Services;
 
-namespace xUnitFinhub
+namespace StockAppTests
 {
     public class StockServiceTest
     {

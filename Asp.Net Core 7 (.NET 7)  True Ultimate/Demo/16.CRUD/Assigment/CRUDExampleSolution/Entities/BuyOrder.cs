@@ -1,7 +1,11 @@
-﻿namespace Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Entities
 {
     public class BuyOrder
     {
+        [Key]
         public Guid BuyOrderID { get; set; }
         public string StockSymbol { get; set; }
         public string StockName { get; set; }

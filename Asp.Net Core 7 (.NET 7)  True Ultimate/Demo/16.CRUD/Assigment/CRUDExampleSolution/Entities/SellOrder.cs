@@ -1,7 +1,10 @@
-﻿namespace Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Entities
 {
     public class SellOrder
     {
+        [Key]
         public Guid SellOrderID { get; set; }
         public string StockSymbol { get; set; }
         public string StockName { get; set;}

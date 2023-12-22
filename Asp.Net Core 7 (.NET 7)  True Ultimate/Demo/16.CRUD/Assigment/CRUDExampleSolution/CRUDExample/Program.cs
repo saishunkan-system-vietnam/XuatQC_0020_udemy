@@ -36,8 +36,6 @@ builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider sevices,
 
 var app = builder.Build();
 
-//app.MapGet("/", () => "Hello World!");
-
 if (builder.Environment.IsDevelopment())
 {
     //app.UseDeveloperExceptionPage();
@@ -53,5 +51,7 @@ Rotativa.AspNetCore.RotativaConfiguration.Setup("wwwroot", wkhtmltopdfRelativePa
 app.UseStaticFiles();
 app.UseRouting();
 app.MapControllers();
+
+app.UseHttpLoggingMiddleware();
 
 app.Run();

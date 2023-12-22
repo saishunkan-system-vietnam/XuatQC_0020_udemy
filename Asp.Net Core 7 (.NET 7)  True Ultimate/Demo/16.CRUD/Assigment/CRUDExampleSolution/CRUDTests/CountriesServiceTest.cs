@@ -10,16 +10,34 @@ using Services;
 using EntityFrameworkCoreMock;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using RepositoryContracts;
+using Repositories;
 
 namespace CRUDTests
 {
     public class CountriesServiceTest
     {
         private readonly ICountriesService _countriesService;
-        public CountriesServiceTest(ICountriesService countriesService)
+        public CountriesServiceTest()
         {
-            var countriesInitialData = new List<Country>() { };
-            _countriesService = countriesService;
+            // Create init person object to mock data
+            var personInitialData = new List<Person>() { };
+
+            // Create init country object to mock data
+            var countryInitialData = new List<Country>() { };
+
+            // create DB context mock
+            DbContextMock<PersonDBContext> dbContextMock = new DbContextMock<PersonDBContext>(
+                    new DbContextOptionsBuilder<PersonDBContext>().Options
+                );
+
+            PersonDBContext dbContext = dbContextMock.Object;
+
+
+            dbContextMock.CreateDbSetMock(temp => temp.Persons, personInitialData);
+            dbContextMock.CreateDbSetMock(temp => temp.Countries, countryInitialData);
+
+            _countriesService = new CountriesService(dbContext);
 
         }
 

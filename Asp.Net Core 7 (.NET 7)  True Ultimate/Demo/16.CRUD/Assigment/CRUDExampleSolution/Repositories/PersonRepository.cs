@@ -20,13 +20,15 @@ namespace Repositories
         public Person AddPerson(Person person)
         {
             // generate new person ID
-            person.PersonID = new Guid();
+            person.PersonID = Guid.NewGuid();
 
             // add person to person list
             _db.Persons.Add(person);
             _db.SaveChanges();
 
-            return person;
+            Person? personAdded = GetPersonById(person.PersonID);
+
+            return personAdded;
         }
 
         public bool DetletePerson(Guid personID)
@@ -69,7 +71,9 @@ namespace Repositories
         public Person? UpdatePerson(Person? personUpdateRequest)
         {
             // if personId is not valid, it should throw argument exception
-            var existingEntity = _db.Set<Person>().Include("Country").FirstOrDefault(x => x.PersonID == personUpdateRequest.PersonID);
+            //var existingEntity = _db.Set<Person>().Include(nameof(Country)).FirstOrDefault(x => x.PersonID == personUpdateRequest.PersonID);
+
+            Person existingEntity = GetPersonById(personUpdateRequest.PersonID);
             if (existingEntity == null) { return null; }
 
             _db.Entry(existingEntity).CurrentValues.SetValues(personUpdateRequest);
