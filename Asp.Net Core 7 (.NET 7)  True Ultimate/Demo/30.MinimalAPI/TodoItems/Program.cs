@@ -6,7 +6,9 @@ builder.Services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase("Tod
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+//app.MapGet("/", () => "Hello World!");
+
+app.MapGet("/", GetAllTodos);
 
 var tooItemGroup = app.MapGroup("todoitems");
 tooItemGroup.MapGet("/", GetAllTodos);
@@ -21,7 +23,14 @@ app.Run();
 
 static async Task<IResult> GetAllTodos(TodoDbContext db)
 {
-    return TypedResults.Ok(await db.Todos.Select(x => new TodoItemDTO(x)).ToArrayAsync());
+    var todoItems = await db.Todos.Select(x => new TodoItemDTO(x)).ToArrayAsync();
+
+    if (todoItems.Any())
+    {
+        return TypedResults.Ok(todoItems);
+    }
+
+    return TypedResults.Ok("Please add to item to show");
 }
 
 static async Task<IResult> GetCompleteTodos(TodoDbContext db)
