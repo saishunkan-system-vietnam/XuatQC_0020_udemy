@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CRUDExample.Filters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualBasic;
 using Rotativa.AspNetCore;
@@ -61,15 +62,9 @@ namespace CRUDExample.Controllers
 
         [Route("create")]
         [HttpPost]
+        [TypeFilter(typeof(PersonValidateFilter))]
         public IActionResult Create(PersonAddRequest personAddRequest)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                GetAllCountries();
-                return View();
-            }
-
             // call the service to add person to the persons list
             PersonResponse personResponse = _personService.AddPerson(personAddRequest);
 
@@ -98,6 +93,7 @@ namespace CRUDExample.Controllers
 
         [HttpPost]
         [Route("edit/{personID}")]
+        [TypeFilter(typeof(PersonValidateFilter))]
         public IActionResult Edit(PersonUpdateRequest personUpdateRequest)
         {
             PersonResponse? personResponse = _personService.GetPersonById(personUpdateRequest.PersonID);
@@ -107,17 +103,14 @@ namespace CRUDExample.Controllers
                 return RedirectToAction("Index", "Persons");
             }
 
-            if (ModelState.IsValid)
+            PersonResponse? updatePersonResponse = _personService.UpdatePerson(personUpdateRequest);
+            if(updatePersonResponse == null)
             {
-                PersonResponse updatePersonResponse = _personService.UpdatePerson(personUpdateRequest);
-                return RedirectToAction("Index", "Persons");
-            }
-            else
-            {
+                ViewBag.Errors = "Some thing error occur while update person";
                 GetAllCountries();
-                ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return View(personResponse.ToPersonUpdateRequest());
             }
+            return RedirectToAction("Index", "Persons");
         }
 
 
@@ -180,7 +173,7 @@ namespace CRUDExample.Controllers
             return Json(true);
         }
 
-        private List<CountryResponse> GetAllCountries()
+        public List<CountryResponse> GetAllCountries()
         {
             List<CountryResponse> countries = _countriesService.GetAllCountries();
 
