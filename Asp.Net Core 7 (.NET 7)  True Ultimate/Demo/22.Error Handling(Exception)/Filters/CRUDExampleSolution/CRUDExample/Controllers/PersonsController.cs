@@ -10,7 +10,7 @@ using ServiceContracts.Enums;
 namespace CRUDExample.Controllers
 {
     [Route("persons")]
-    [TypeFilter(typeof(ExceptionHandlingFilter))]
+    //[TypeFilter(typeof(ExceptionHandlingFilter))]
     public class PersonsController : Controller
     {
         private readonly IPersonService _personService;

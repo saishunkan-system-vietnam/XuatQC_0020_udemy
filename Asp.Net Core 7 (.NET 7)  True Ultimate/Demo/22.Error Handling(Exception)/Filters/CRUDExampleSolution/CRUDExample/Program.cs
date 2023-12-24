@@ -1,4 +1,5 @@
 using CRUDExample.Entities;
+using CRUDExample.Filters;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
@@ -8,13 +9,20 @@ using ServiceContracts;
 using Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews();
+
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ExceptionHandlingFilter>();
+});
+
 builder.Services.AddScoped<ICountriesService, CountriesService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 
 
-builder.Services.AddDbContext<PersonDBContext>(options => {
+builder.Services.AddDbContext<PersonDBContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     // options.UseLazyLoadingProxies();
 });
