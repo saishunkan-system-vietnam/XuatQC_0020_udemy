@@ -75,6 +75,18 @@ namespace ServiceContracts.DTO
         /// <returns>An <OrderResponse"/> object.</returns>
         public static OrderResponse ToOrderResponse(this Order order)
         {
+            return new OrderResponse
+            {
+                OrderId = order.OrderId,
+                OrderNumber = order.OrderNumber,
+                CustomerName = order.CustomerName,
+                OrderDate = (DateTime)order.OrderDate,
+                TotalAmount = order.TotalAmount
+            };
+        }
+
+        public static OrderResponse ToOrderResponseWithItemResponse(this Order order)
+        {
             List<OrderItemResponse>? orderItems = null;
 
             if (order.OrderItems != null)

@@ -69,7 +69,7 @@ namespace Services
 
             var orderFromRepository = await _ordersRepository.GetOrderByOrderId(orderId);
            
-            return orderFromRepository?.ToOrderResponse();
+            return orderFromRepository?.ToOrderResponseWithItemResponse();
         }
 
         public async Task<OrderResponse?> UpdateOrder(OrderUpdateRequest orderRequest)

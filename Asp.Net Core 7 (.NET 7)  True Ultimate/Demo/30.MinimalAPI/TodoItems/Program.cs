@@ -6,8 +6,6 @@ builder.Services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase("Tod
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 
-//app.MapGet("/", () => "Hello World!");
-
 app.MapGet("/", GetAllTodos);
 
 var tooItemGroup = app.MapGroup("todoitems");
@@ -30,7 +28,7 @@ static async Task<IResult> GetAllTodos(TodoDbContext db)
         return TypedResults.Ok(todoItems);
     }
 
-    return TypedResults.Ok("Please add to item to show");
+    return TypedResults.Ok("Please add to item to show  ");
 }
 
 static async Task<IResult> GetCompleteTodos(TodoDbContext db)
@@ -73,7 +71,7 @@ static async Task<IResult> UpdateTodo(int id, TodoItemDTO todoItemDTO, TodoDbCon
 
     await db.SaveChangesAsync();
 
-    return TypedResults.NoContent();
+    return TypedResults.Ok(todoItemDTO);
 }
 
 static async Task<IResult> DeleteTodo(int id, TodoDbContext db)
@@ -82,7 +80,7 @@ static async Task<IResult> DeleteTodo(int id, TodoDbContext db)
     {
         db.Todos.Remove(todo);
         await db.SaveChangesAsync();
-        return TypedResults.NoContent();
+        return TypedResults.Ok("Delete success");
     }
 
     return TypedResults.NotFound();

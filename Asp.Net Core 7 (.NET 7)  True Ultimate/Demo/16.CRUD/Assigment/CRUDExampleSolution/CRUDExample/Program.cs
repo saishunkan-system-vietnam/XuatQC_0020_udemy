@@ -36,6 +36,7 @@ builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider sevices,
 
 var app = builder.Build();
 
+app.UseExceptionHandlingMiddleware();
 if (builder.Environment.IsDevelopment())
 {
     //app.UseDeveloperExceptionPage();
@@ -44,7 +45,6 @@ if (builder.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/error");
-    app.UseExceptionHandlingMiddleware();
 }
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup("wwwroot", wkhtmltopdfRelativePath: "Rotativa");
